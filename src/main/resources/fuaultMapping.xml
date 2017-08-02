@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	<!-- 体检报告 -->
+	<bean name="medicalReport" class="com.chh.dc.calc.task.MedicalReport" init-method="init">
+		<property name="dataReader" ref="redisDataReader"/>
+        <property name="jdbcExporter" ref="jdbcExporter"/>
+        <property name="dictDao" ref="dictDao"/>
+		<property name="fieldMap">
+			<map>
+				<entry key="f_2103"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="燃油系统状态"/></map></entry>
+				<entry key="f_2104"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="计算负荷值"/></map></entry>
+				<entry key="f_2105"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="发动机冷却液温度"/></map></entry>
+				<entry key="f_2106"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="短时燃油修正(气缸列1和3)"/></map></entry>
+				<entry key="f_2107"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="长期燃油修正(气缸列1和3)"/></map></entry>
+				<entry key="f_2108"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="短时燃油修正(气缸列2和4)"/></map></entry>
+				<entry key="f_2109"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="长期燃油修正(气缸列2和4)"/></map></entry>
+				<entry key="f_210a"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="燃油压力计量"/></map></entry>
+				<entry key="f_210b"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="进气歧管绝对压力"/></map></entry>
+				<entry key="f_210c"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="发动机转速"/></map></entry>
+				
+				<entry key="f_210d"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="车速"/></map></entry>
+				<entry key="f_210e"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="第一缸点火正时提前角(不包括机械提前)"/></map></entry>
+				<entry key="f_210f"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="进气温度"/></map></entry>
+				<entry key="f_2110"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="空气流量传感器的空气流量"/></map></entry>
+				<entry key="f_2111"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="绝对节气门位置"/></map></entry>
+				<entry key="f_2112"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="二次空气状态指令"/></map></entry>
+				<entry key="f_2113"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="氧传感器位置"/></map></entry>
+				<entry key="f_2114"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="传统0到1V氧传感器输出电压(B1-S1)及与此传感器关联的短时燃油修正(B1-S1)"/></map></entry>
+				<entry key="f_2115"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="传统0到1V氧传感器输出电压(B1-S2)及与此传感器关联的短时燃油修正(B1-S2)"/></map></entry>
+				<entry key="f_2116"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="传统0到1V氧传感器输出电压(B2-S1)及与此传感器关联的短时燃油修正(B2-S1)"/></map></entry>
+				
+				<entry key="f_2117"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="传统0到1V氧传感器输出电压(B2-S2)及与此传感器关联的短时燃油修正(B2-S2)"/></map></entry>
+				<entry key="f_2118"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="传统0到1V氧传感器输出电压(B3-S1)及与此传感器关联的短时燃油修正(B3-S1)"/></map></entry>
+				<entry key="f_2119"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="传统0到1V氧传感器输出电压(B3-S2)及与此传感器关联的短时燃油修正(B3-S2)"/></map></entry>
+				<entry key="f_211a"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="传统0到1V氧传感器输出电压(B4-S1)及与此传感器关联的短时燃油修正(B4-S1)"/></map></entry>
+				<entry key="f_211b"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="传统0到1V氧传感器输出电压(B4-S2)及与此传感器关联的短时燃油修正(B4-S2)"/></map></entry>
+				<entry key="f_211c"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="OBD系统的车辆设计要求"/></map></entry>
+				<entry key="f_211d"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="氧传感器的位置"/></map></entry>
+				<entry key="f_211e"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="辅助输入状态"/></map></entry>
+				<entry key="f_211f"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="自发动机起动的时间"/></map></entry>
+				<entry key="f_2120"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="原始数据"/></map></entry>
+				
+				<entry key="f_2121"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="在MIL激活状态下行驶的里程"/></map></entry>
+				<entry key="f_2122"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="相对于歧管真空度的油轨压力"/></map></entry>
+				<entry key="f_2123"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="相对于大气压力的油轨压力"/></map></entry>
+				<entry key="f_2124"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电压（B1S1）"/></map></entry>
+				<entry key="f_2125"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电压(B1S2)"/></map></entry>
+				<entry key="f_2126"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电压(B2S1)"/></map></entry>
+				<entry key="f_2127"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电压(B2S2)"/></map></entry>
+				<entry key="f_2128"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电压(B3S1)"/></map></entry>
+				<entry key="f_2129"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电压(B3S2)"/></map></entry>
+				<entry key="f_212a"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电压(B4S1)"/></map></entry>
+				
+				<entry key="f_212b"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电压(B4S2)"/></map></entry>
+				<entry key="f_212c"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="EGR指令开度"/></map></entry>
+				<entry key="f_212d"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="EGR开度误差 (实际开度 — 指令开度)/指令开度*100%"/></map></entry>
+				<entry key="f_212e"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="蒸发冲洗控制指令"/></map></entry>
+				<entry key="f_212f"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="燃油液位输入"/></map></entry>
+				<entry key="f_2130"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="自故障码被清除之后经历的暖机循环次数"/></map></entry>
+				<entry key="f_2131"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="自故障码被清除之后的行驶里程"/></map></entry>
+				<entry key="f_2132"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="蒸发系统的蒸气压力"/></map></entry>
+				<entry key="f_2133"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="大气压"/></map></entry>
+				<entry key="f_2134"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电流(B1S1)"/></map></entry>
+				
+				<entry key="f_2135"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电流(B1S2)"/></map></entry>
+				<entry key="f_2136"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电流(B2S1)"/></map></entry>
+				<entry key="f_2137"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电流(B2S2)"/></map></entry>
+				<entry key="f_2138"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电流(B3S1)"/></map></entry>
+				<entry key="f_2139"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电流(B3S2)"/></map></entry>
+				<entry key="f_213a"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电流(B4S1)"/></map></entry>
+				<entry key="f_213b"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="线性或宽带式氧传感器的等效比(lambda)和电流(B4S2)"/></map></entry>
+				<entry key="f_213c"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="催化器温度 B1S1"/></map></entry>
+				<entry key="f_213d"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="催化器温度 B2S1"/></map></entry>
+				<entry key="f_213e"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="催化器温度 B1S2"/></map></entry>
+				
+				<entry key="f_213f"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="催化器温度 B2S2"/></map></entry>
+				<entry key="f_2140"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="原始数据"/></map></entry>
+				<entry key="f_2141"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="当前驾驶循环的监测状态"/></map></entry>
+				<entry key="f_2142"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="控制模块电压"/></map></entry>
+				<entry key="f_2143"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="绝对负荷值"/></map></entry>
+				<entry key="f_2144"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="等效比指令"/></map></entry>
+				<entry key="f_2145"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="相对节气门位置"/></map></entry>
+				<entry key="f_2146"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="环境空气温度"/></map></entry>
+				<entry key="f_2147"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="绝对节气门位置B"/></map></entry>
+				<entry key="f_2148"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="绝对节气门位置C"/></map></entry>
+				
+				<entry key="f_2149"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="加速踏板位置D"/></map></entry>
+				<entry key="f_214a"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="加速踏板位置E"/></map></entry>
+				<entry key="f_214b"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="加速踏板位置F"/></map></entry>
+				<entry key="f_214c"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="节气门执行器控制指令"/></map></entry>
+				<entry key="f_214d"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="MIL处于激活状态下的发动机运转时间"/></map></entry>
+				<entry key="f_214e"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="自故障码清除之后的时间"/></map></entry>
+				<entry key="f_214f"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="等效比的最大值及对应的氧传感器电压"/></map></entry>
+				<entry key="f_2150"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="来自空气流量传感器的最大流量"/></map></entry>
+				<entry key="f_2151"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="当前车辆使用的燃料类型"/></map></entry>
+				<entry key="f_2152"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="酒精在燃料的百分比"/></map></entry>
+				
+				<entry key="f_2153"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="蒸发系统蒸气压力绝对值"/></map></entry>
+				<entry key="f_2154"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="蒸发系统蒸气压力"/></map></entry>
+				<entry key="f_2155"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="第二个氧传感器的短时燃油修正(Bank 1和Bank 3)"/></map></entry>
+				<entry key="f_2156"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="第二个氧传感器的长期燃油修正(Bank 1和Bank 3)"/></map></entry>
+				<entry key="f_2157"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="第二个氧传感器的短时燃油修正(Bank 2和Bank 4)"/></map></entry>
+				<entry key="f_2158"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="第二个氧传感器的长期燃油修正(Bank 2和Bank 4)"/></map></entry>
+				<entry key="f_2159"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="油轨绝对压力"/></map></entry>
+				<entry key="f_215a"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="加速踏板相对位置"/></map></entry>
+				<entry key="f_215b"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="混合动力电池剩余寿命"/></map></entry>
+				<entry key="f_215c"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="发动机机油温度"/></map></entry>
+				
+				<entry key="f_215d"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="燃油喷射正时"/></map></entry>
+				<entry key="f_215e"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="发动机燃油消耗率"/></map></entry>
+				<!-- <entry key="f_215f"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="燃油系统状态"/></map></entry> -->
+				<entry key="f_2160"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="原始数据"/></map></entry>
+				<entry key="f_2161"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="司机请求的发动机扭矩百分比"/></map></entry>
+				<entry key="f_2162"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="实际的发动机扭矩百分比"/></map></entry>
+				<entry key="f_2163"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="发动机参考扭矩"/></map></entry>
+				<entry key="f_2164"><map><entry key="min" value="1"/><entry key="max" value="100"/><entry key="desc" value="发动机扭矩百分比"/></map></entry>
+			</map>
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- 引入资源 -->
+    <import resource="spring-datasource.xml"/>
+	<import resource="fuaultMapping.xml"/>
+    <!-- 核心组件 -->
+    <bean name="triggerManager" class="com.chh.dc.calc.trigger.TriggerManager" init-method="init">
+        <property name="triggerList">
+            <list>
+                <ref bean="htwx_alarm_trigger"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="taskManager" class="com.chh.dc.calc.task.TaskManager" init-method="init">
+        <property name="taskMaxNum" value="30"/>
+        <property name="triggerManager" ref="triggerManager"/>
+        <property name="taskMap">
+            <map>
+                <entry key="htwx_connection_broken">
+                    <list>
+                        <value>tripTask</value>
+                    </list>
+                </entry>
+                <entry key="htwx_stall">
+                    <list>
+                        <value>tripTask</value>
+                    </list>
+                </entry>
+                <entry key="htwx_lost">
+                    <list>
+                        <value>lostTask</value>
+                    </list>
+                </entry> 
+                <entry key="htwx_cancel_lost">
+                    <list>
+                        <value>canelLostTask</value>
+                    </list>
+                </entry> 
+                <entry key="htwx_fault_alarm">
+                    <list>
+                        <value>faultTask</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+        <property name="redisCacheMgr" ref="redisCacheMgr" />
+    </bean>
+
+    <bean name="redisCacheMgr" class="com.chh.dc.calc.task.TaskManager.RedisCacheMgr" >
+        <property name="redisCache" ref="redisCache"/>
+        <!--轮询间隔时间：单位秒-->
+        <property name="intervalsSec" value="14400" />
+        <!--非盒子最后一次行程缓存数据最大缓存时长，单位秒-->
+        <property name="maxLifeSec" value="36000" />
+    </bean>
+
+
+    <!-- reader-->
+    <bean name="alarmRpopReader" class="com.chh.dc.calc.reader.RedisStackReader">
+        <property name="option" value="1"/>
+        <property name="stackName" value="notificationStackCache:htwx_warning_msg"/>
+        <property name="jedisFactory" ref="test_redis"/>
+    </bean>
+
+    <bean name="redisDataReader" class="com.chh.dc.calc.reader.RedisDataReader">
+        <property name="jedisFactory" ref="test_redis"/>
+    </bean>
+<!--    <bean name="hashReader" claRedisHashReaderader">
+        <property name="jedisFactory" ref="test_redis"/>
+    </bean>-->
+
+
+    <!-- trigger -->
+    <bean name="htwx_alarm_trigger" class="com.chh.dc.calc.trigger.condition.ConditionTrigger">
+        <property name="name" value="htwx_alarm_trigger"/>
+        <property name="dataReader" ref="alarmRpopReader"/>
+        <property name="triggerManager" ref="triggerManager"/>
+        <property name="conditionMap">
+            <map>
+                <entry key="htwx_connection_broken">
+                    <bean class="com.chh.dc.calc.trigger.condition.HtwxWarningCondtion">
+                        <property name="warningType" value="17" />
+                    </bean>
+                </entry>
+                <entry key="htwx_stall">
+                    <bean class="com.chh.dc.calc.trigger.condition.HtwxWarningCondtion">
+                        <property name="warningType" value="81" />
+                    </bean>
+                </entry>
+                <entry key="htwx_lost">
+                    <bean class="com.chh.dc.calc.trigger.condition.HtwxWarningCondtion">
+                        <property name="warningType" value="65" />
+                    </bean>
+                </entry> 
+                <entry key="htwx_cancel_lost">
+                    <bean class="com.chh.dc.calc.trigger.condition.HtwxWarningCondtion">
+                        <property name="warningType" value="18" />
+                    </bean>
+                </entry> 
+                <entry key="htwx_fault_alarm">
+                    <bean class="com.chh.dc.calc.trigger.condition.HtwxWarningCondtion">
+                        <property name="warningType" value="100" />
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+
+    <!-- exporter-->
+    <bean name="jdbcExporter" class="com.chh.dc.calc.exporter.JDBCExporter" scope="singleton">
+        <property name="dataSource" ref="icp-data-center"/>
+    </bean>
+
+    <bean name="jdbcBatchExporter" class="com.chh.dc.calc.exporter.JDBCBatchExporter" scope="singleton">
+        <property name="dataSource" ref="icp-data-center"/>
+        <!--<property name="batchNum" value="50"/>-->
+    </bean>
+
+    <bean name="redisExporter" class="com.chh.dc.calc.exporter.RedisExporter">
+        <property name="jedisFactory" ref="test_redis"/>
+    </bean>
+
+    <bean name="redisCache" class="com.chh.dc.calc.util.redis.RedisCache">
+        <property name="jedisFactory" ref="test_redis"/>
+    </bean>
+
+    <!-- trip task-->
+    <bean name="tripTask" class="com.chh.dc.calc.task.HtwxTripTask" scope="prototype">
+        <property name="redisCache" ref="redisCache"/>
+        <property name="jdbcExporter" ref="jdbcExporter"/>
+        <!--<property name="jdbcBatchExporter" ref="jdbcBatchExporter"/>-->
+        <property name="deviceTripDao" ref="deviceTripDao"/>
+        <property name="medicalReport" ref="medicalReport"/>
+        <property name="redisExporter" ref="redisExporter" />
+    </bean>
+    
+    <!-- lost task-->
+    <bean name="lostTask" class="com.chh.dc.calc.task.HtwxLostTask" scope="prototype">
+        <property name="jdbcExporter" ref="jdbcExporter"/>
+        <property name="redisExporter" ref="redisExporter" />
+        <property name="warningDao" ref="warningDao"/>
+        <property name="keys" value="obd_data_warning_queue"/>
+    </bean>
+    
+    <!-- cancel lost task-->
+    <bean name="canelLostTask" class="com.chh.dc.calc.task.HtwxCancelLostTask" scope="prototype">
+        <property name="jdbcExporter" ref="jdbcExporter"/>
+        <property name="redisExporter" ref="redisExporter" />
+        <property name="warningDao" ref="warningDao"/>
+        <property name="keys" value="obd_data_warning_queue"/>
+    </bean>
+    
+    <!-- fault task-->
+    <bean name="faultTask" class="com.chh.dc.calc.task.HtwxFaultTask" scope="prototype">
+        <property name="dataReader" ref="redisDataReader"/>
+        <property name="jdbcExporter" ref="jdbcExporter"/>
+        <property name="redisExporter" ref="redisExporter" />
+        <property name="interval" value="300"/>
+        <property name="keys" value="obd_data_warning_queue"/>
+    </bean>
+
+    <!--ehcache-->
+    <bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation" value="classpath:ehcache.xml"/>
+        <property name="shared" value="true"/>
+    </bean>
+
+    <bean id="deviceTripDao" class="com.chh.dc.calc.db.dao.DeviceTripDao">
+        <property name="dataSource" ref="icp-data-center"/>
+    </bean>
+
+	<bean id="warningDao" class="com.chh.dc.calc.db.dao.WarningDao">
+		<property name="dataSource" ref="icp-data-center"/>
+	</bean>
+	<bean id="dictDao" class="com.chh.dc.calc.db.dao.DictDao">
+		<property name="dataSource" ref="icp-data-center"/>
+	</bean>
+	
+	<bean id="OBDAlarmCodeConverter" class="com.chh.dc.calc.util.OBDAlarmCodeConverter" init-method="init">
+		<property name="dictDao" ref="dictDao"/>
+	</bean>
+	
+</beans>
