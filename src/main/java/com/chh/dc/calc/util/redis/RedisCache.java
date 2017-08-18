@@ -61,12 +61,12 @@ public class RedisCache {
      * 参数objects[0]: 请求类型
      * 参数objects[0]: redis key
      * RedisHashReader.OPTION_HGET, LAST_GPS_KEY
-     * @param objects
      *
+     * @param objects
      * @return
      */
     public DataPackage getData(Object... objects) {
-        if (objects == null||objects.length<2) {
+        if (objects == null || objects.length < 2) {
             return null;
         }
         int op = (int) objects[0];
@@ -100,16 +100,16 @@ public class RedisCache {
                     break;
                 }
                 case OPTION_LRANGE: {
-                	String min = objects[2].toString();
+                    String min = objects[2].toString();
                     String max = objects[3].toString();
                     data = jedis.lrange(keyNameBytes, Long.parseLong(min), Long.parseLong(max));
                     break;
                 }
-                case OPTION_ZRANGE:{
+                case OPTION_ZRANGE: {
                     String min = objects[2].toString();
                     String max = objects[3].toString();
                     Set<byte[]> bytes = jedis.zrange(keyNameBytes, Long.parseLong(min), Long.parseLong(max));
-                    if (bytes!=null&&bytes.size()>0) {
+                    if (bytes != null && bytes.size() > 0) {
                         data = bytes;
                     }
                     break;
@@ -118,7 +118,7 @@ public class RedisCache {
                     String min = objects[2].toString();
                     String max = objects[3].toString();
                     Set<byte[]> bytes = jedis.zrangeByScore(keyNameBytes, Double.parseDouble(min), Double.parseDouble(max));
-                    if (bytes!=null&&bytes.size()>0) {
+                    if (bytes != null && bytes.size() > 0) {
                         data = bytes;
                     }
                     break;
@@ -134,31 +134,31 @@ public class RedisCache {
                     } else {
                         bytes = jedis.zrevrangeByScore(keyNameBytes, Double.parseDouble(max), Double.parseDouble(min));
                     }
-                    if (bytes!=null&&bytes.size()>0) {
+                    if (bytes != null && bytes.size() > 0) {
                         data = bytes;
                     }
                     break;
                 }
                 case OPTION_HMGET: {
 //                    List<byte[]> bytes = null;
-                    if(objects.length>2){
-                        byte[][] fields = new byte[objects.length-2][];
-                        for (int i=2;i<objects.length;i++){
-                            fields[i-2] = objects[i].toString().getBytes();
+                    if (objects.length > 2) {
+                        byte[][] fields = new byte[objects.length - 2][];
+                        for (int i = 2; i < objects.length; i++) {
+                            fields[i - 2] = objects[i].toString().getBytes();
                         }
-                        data = jedis.hmget(keyNameBytes,fields);
+                        data = jedis.hmget(keyNameBytes, fields);
                     }
                     break;
                 }
-                case OPTION_HGET:{
-                    data = jedis.hget(keyNameBytes,objects[2].toString().getBytes());
+                case OPTION_HGET: {
+                    data = jedis.hget(keyNameBytes, objects[2].toString().getBytes());
                     break;
                 }
-                case OPTION_KEYS:{
+                case OPTION_KEYS: {
                     data = jedis.keys((String) objects[1]);
                     break;
                 }
-                case OPTION_ZCARD:{
+                case OPTION_ZCARD: {
                     data = jedis.zcard((String) objects[1]);
                     break;
                 }
@@ -180,8 +180,8 @@ public class RedisCache {
     }
 
     public void del(String key) {
-        if (key==null) {
-            return ;
+        if (key == null) {
+            return;
         }
         Jedis jedis = null;
         try {
@@ -196,18 +196,18 @@ public class RedisCache {
         }
     }
 
-    public Long zrem(String key,Object... member ) {
-        if (key==null) {
+    public Long zrem(String key, Object... member) {
+        if (key == null) {
             return 0l;
         }
         Jedis jedis = null;
         try {
             jedis = jedisFactory.getJedis();
             byte[][] fields = new byte[member.length][];
-            for (int i=0;i<member.length;i++){
+            for (int i = 0; i < member.length; i++) {
                 fields[i] = SerializeUtil.serialize(member[i]);
             }
-            return jedis.zrem(key.getBytes(),fields);
+            return jedis.zrem(key.getBytes(), fields);
         } catch (Exception e) {
             log.error("移除Redis缓存数据" + key + "的成员出错", e);
             return 0l;
@@ -218,14 +218,14 @@ public class RedisCache {
         }
     }
 
-    public Long zremrangeByScore(String key,double min,double max ) {
-        if (key==null) {
+    public Long zremrangeByScore(String key, double min, double max) {
+        if (key == null) {
             return 0l;
         }
         Jedis jedis = null;
         try {
             jedis = jedisFactory.getJedis();
-            return jedis.zremrangeByScore(key.getBytes(),min,max);
+            return jedis.zremrangeByScore(key.getBytes(), min, max);
         } catch (Exception e) {
             log.error("移除Redis缓存数据" + key + "的成员出错", e);
             return 0l;
@@ -236,16 +236,16 @@ public class RedisCache {
         }
     }
 
-    public void zadd(String key,double score,Object value ) {
-        if (key==null) {
-            return ;
+    public void zadd(String key, double score, Object value) {
+        if (key == null) {
+            return;
         }
         Jedis jedis = null;
         try {
             jedis = jedisFactory.getJedis();
             byte[] bytes = SerializeUtil.serialize(value);
 
-            jedis.zadd(key.getBytes(),score,bytes);
+            jedis.zadd(key.getBytes(), score, bytes);
         } catch (Exception e) {
             log.error("添加Redis缓存数据" + key + "的成员出错", e);
         } finally {
@@ -254,7 +254,8 @@ public class RedisCache {
             }
         }
     }
-    public Long zrevrank(String key,Object member) {
+
+    public Long zrevrank(String key, Object member) {
         if (key == null) {
             return null;
         }
@@ -272,8 +273,8 @@ public class RedisCache {
             }
         }
     }
-    
-    public Long zcount(String key,Double min,Double max) {
+
+    public Long zcount(String key, Double min, Double max) {
         if (key == null || max == null || max == null) {
             return 0L;
         }

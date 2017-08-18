@@ -90,7 +90,7 @@
     </dependencies>
 
     <build>
-        <finalName>data-center</finalName>
+        <finalName>dc-calc</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>

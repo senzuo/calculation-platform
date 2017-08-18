@@ -55,7 +55,7 @@ public class HtwxCancelLostTask extends Task{
 			 } catch (Exception e) {
 				log.error("JDBC失联告警转换输出异常", e);
 			 }
-             //3.取消失联告警写入告警推送队列缓存
+             //3.取消失联告警 写入告警推送队列缓存
              try {
                  redisExporter.export(RedisExporter.OP_LPUSH, keys.getBytes(), lostMap, null, null);
              } catch (Exception e) {

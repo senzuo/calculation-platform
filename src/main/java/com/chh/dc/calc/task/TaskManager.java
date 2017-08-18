@@ -74,7 +74,7 @@ public class TaskManager extends Thread {
 //                System.out.println(taskList);
                 for (int i = 0; taskList != null && i < taskList.size(); i++) {
                     String taskId = taskList.get(i);
-                    Task task = Runner.getBean(taskId,Task.class);
+                    Task task = Runner.getBean(taskId, Task.class);
 
 //                    if (task.isSingleton() && workingTasks.containsKey(task.getName())) {
 //                        log.info("单例任务[{}]正在运行中", task.getName());
@@ -85,7 +85,7 @@ public class TaskManager extends Thread {
                     service.submit(task);
                 }
             } catch (Exception e) {
-                log.error("任务调度线程异常。",e);
+                log.error("任务调度线程异常。", e);
             }
         }
     }
@@ -177,18 +177,18 @@ public class TaskManager extends Thread {
         /**
          * 轮询间隔时间：单位秒
          */
-        private long intervalsSec = 4*60*60l;
+        private long intervalsSec = 4 * 60 * 60l;
 
 //        private Long maxLifeSec = 10*3600*1000l;
 
         /**
          * 非盒子最后一次行程缓存数据最大缓存时长，单位秒
          */
-        private long maxLifeSec = 10*60*60L;
+        private long maxLifeSec = 10 * 60 * 60L;
 
         private RedisCache redisCache;
 
-        public RedisCacheMgr(){
+        public RedisCacheMgr() {
             super("缓存管理处理器");
         }
 
@@ -209,8 +209,8 @@ public class TaskManager extends Thread {
         }
 
         @Override
-        public void run(){
-            while(keepRunning) {
+        public void run() {
+            while (keepRunning) {
                 try {
                     //1.读取所有 htwx_processed_trip:开头的缓存key
                     //2.循环遍历key
@@ -227,43 +227,43 @@ public class TaskManager extends Thread {
 
                     Date curDate = new Date();
                     //1.读取所有 htwx_processed_trip:开头的缓存key
-                    DataPackage keysData = redisCache.getData(RedisCache.OPTION_KEYS,"htwx_processed_trip:*");
-                    if (keysData!=null) {
+                    DataPackage keysData = redisCache.getData(RedisCache.OPTION_KEYS, "htwx_processed_trip:*");
+                    if (keysData != null) {
                         Set<String> keys = (Set<String>) keysData.getData();
                         String key = null;
                         DataPackage tempData = null;
                         Set<byte[]> tempBytes = null;
-                        Map<String,Object> trip = null;
+                        Map<String, Object> trip = null;
                         Date updateTime = null;
                         String deviceUId = null;
                         Long acconTimeSec = null;
                         //2.循环遍历key
-                        for (Iterator<String> it = keys.iterator();it.hasNext();) {
+                        for (Iterator<String> it = keys.iterator(); it.hasNext(); ) {
                             key = it.next();
                             //3.查看key包含的元素的个数
                             tempData = redisCache.getData(RedisCache.OPTION_ZCARD, key);
                             //4.如果个数大于1
-                            if (tempData!=null&&(Long)tempData.getData()>1){
+                            if (tempData != null && (Long) tempData.getData() > 1) {
                                 //5.取出当前key分数从小到大，0-（N-1）的元素
-                                tempData = redisCache.getData(RedisCache.OPTION_ZRANGE,key,0,-2);
+                                tempData = redisCache.getData(RedisCache.OPTION_ZRANGE, key, 0, -2);
                                 //遍历元素
-                                if (tempData!=null) {
+                                if (tempData != null) {
                                     tempBytes = (Set<byte[]>) tempData.getData();
-                                    for (Iterator<byte[]> it2 = tempBytes.iterator();it2.hasNext();) {
-                                        trip = SerializeUtil.unserialize(it2.next(),Map.class);
+                                    for (Iterator<byte[]> it2 = tempBytes.iterator(); it2.hasNext(); ) {
+                                        trip = SerializeUtil.unserialize(it2.next(), Map.class);
                                         //如果元素update_time小于当前时间+10小时，则删除该元素对应行程的所有行程数据
                                         updateTime = (Date) trip.get("update_time");
-                                        if (updateTime.getTime()+ maxLifeSec*1000 <curDate.getTime()) {
+                                        if (updateTime.getTime() + maxLifeSec * 1000 < curDate.getTime()) {
                                             deviceUId = (String) trip.get("device_uid");
-                                            acconTimeSec = ((Date)trip.get("start_time")).getTime()/1000;
-                                            redisCache.del("htwx_gps:"+deviceUId+"|"+acconTimeSec);
-                                            redisCache.del("htwx_fault_code:"+deviceUId+"|"+acconTimeSec);
-                                            redisCache.del("htwx_alarm:"+deviceUId+"|"+acconTimeSec);
-                                            redisCache.del("htwx_snap:"+deviceUId+"|"+acconTimeSec);
+                                            acconTimeSec = ((Date) trip.get("start_time")).getTime() / 1000;
+                                            redisCache.del("htwx_gps:" + deviceUId + "|" + acconTimeSec);
+                                            redisCache.del("htwx_fault_code:" + deviceUId + "|" + acconTimeSec);
+                                            redisCache.del("htwx_alarm:" + deviceUId + "|" + acconTimeSec);
+                                            redisCache.del("htwx_snap:" + deviceUId + "|" + acconTimeSec);
                                             //从htwx_processed_trip:{device_uid}删除
 //                                            redisCache.zrem(key,trip);
-                                            redisCache.zremrangeByScore(key,acconTimeSec,acconTimeSec);
-                                            log.debug("缓存管理移出行程缓存，tripId:{}",trip.get("id"));
+                                            redisCache.zremrangeByScore(key, acconTimeSec, acconTimeSec);
+                                            log.debug("缓存管理移出行程缓存，tripId:{}", trip.get("id"));
                                         }
                                     }
                                 }
@@ -273,12 +273,12 @@ public class TaskManager extends Thread {
                     }
 
                 } catch (Exception e) {
-                    log.error("缓存管理处理失败！",e);
+                    log.error("缓存管理处理失败！", e);
                 }
                 try {
-                    Thread.sleep(intervalsSec*1000);
+                    Thread.sleep(intervalsSec * 1000);
                 } catch (Exception e) {
-                    log.info("缓存管理处理器休眠终端",e);
+                    log.info("缓存管理处理器休眠终端", e);
                 }
             }
 
@@ -292,7 +292,6 @@ public class TaskManager extends Thread {
         public void setRedisCache(RedisCache redisCache) {
             this.redisCache = redisCache;
         }
-
 
 
     }
